@@ -3,7 +3,6 @@ package com.serjnn.ClientService.controller;
 
 import com.serjnn.ClientService.dtos.AuthRequest;
 import com.serjnn.ClientService.dtos.RegRequest;
-import com.serjnn.ClientService.models.Client;
 import com.serjnn.ClientService.services.ClientDetailService;
 import com.serjnn.ClientService.services.ClientService;
 import com.serjnn.ClientService.services.JwtService;
@@ -15,8 +14,6 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -30,7 +27,7 @@ public class ClientController {
     @PostMapping("/register")
     public ResponseEntity<?> reg(@RequestBody RegRequest regRequest) {
 
-        if (regRequest.getUsername() == null || regRequest.getPassword() == null ) {
+        if (regRequest.getUsername() == null || regRequest.getPassword() == null) {
             return new ResponseEntity<>("Некоторые обязательные поля отсутствуют", HttpStatus.BAD_REQUEST);
         }
         clientService.register(regRequest);
@@ -56,17 +53,10 @@ public class ClientController {
     }
 
     @GetMapping("/some")
-    String some (){
+    String some() {
 
         return "some";
     }
-
-
-
-
-
-
-
 
 
 }
