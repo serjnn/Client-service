@@ -25,17 +25,5 @@ public class ClientDetailService implements UserDetailsService {
         return clientService.findByUsername(username);
     }
 
-    private String[] Roles(String role) {
-        switch (role) {
-            case "client":
-                return new String[]{"client"};
-            case "manager":
-                return new String[]{"manager", "client"};
-            case "admin":
-                return new String[]{"admin", "manager", "client"};
-            default:
-                throw new IllegalArgumentException("Unknown role: " + role);
 
-        }
-    }
 }

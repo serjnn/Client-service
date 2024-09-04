@@ -3,6 +3,7 @@ package com.serjnn.ClientService.controller;
 
 import com.serjnn.ClientService.dtos.AuthRequest;
 import com.serjnn.ClientService.dtos.RegRequest;
+import com.serjnn.ClientService.models.Client;
 import com.serjnn.ClientService.services.ClientDetailService;
 import com.serjnn.ClientService.services.ClientService;
 import com.serjnn.ClientService.services.JwtService;
@@ -14,6 +15,8 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -51,6 +54,14 @@ public class ClientController {
         String token = jwtService.generateToken(userDetails);
         return ResponseEntity.ok(token);
     }
+
+    @GetMapping("/some")
+    String some (){
+
+        return "some";
+    }
+
+
 
 
 

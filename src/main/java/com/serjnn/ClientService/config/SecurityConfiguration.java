@@ -51,6 +51,7 @@ public class SecurityConfiguration {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity.authorizeHttpRequests(registry -> {
                     registry.requestMatchers("/", "/api/v1/register", "/api/v1/auth").permitAll();
+                    registry.requestMatchers("/api/v1/some").hasRole("client");
                     registry.anyRequest().permitAll();
                 })
 
