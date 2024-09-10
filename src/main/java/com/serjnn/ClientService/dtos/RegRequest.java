@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class RegRequest {
-    private String username;
+    private String mail;
     private String password;
 
 }

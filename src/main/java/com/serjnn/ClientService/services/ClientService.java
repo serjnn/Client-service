@@ -5,7 +5,6 @@ import com.serjnn.ClientService.dtos.RegRequest;
 import com.serjnn.ClientService.models.Client;
 import com.serjnn.ClientService.repo.ClientRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +14,7 @@ import java.util.NoSuchElementException;
 @RequiredArgsConstructor
 public class ClientService {
     private final ClientRepository clientRepository;
-    private  final PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
 
     public void save(Client client) {
@@ -25,18 +24,18 @@ public class ClientService {
     public void register(RegRequest regRequest) {
 
 
-        Client client = new Client(regRequest.getUsername(),
+        Client client = new Client(regRequest.getMail(),
                 passwordEncoder.encode(regRequest.getPassword())
-                );
+        );
         client.setRole("client");
 
         save(client);
 
     }
 
-    public Client findByUsername(String username) {
-        return clientRepository.findByUsername(username).orElseThrow(() -> new NoSuchElementException("no such" +
-                " client with username  " + username));
+    public Client findByMail(String mail) {
+        return clientRepository.findByMail(mail).orElseThrow(() -> new NoSuchElementException("no such" +
+                " client with mail  " + mail));
 
     }
 }

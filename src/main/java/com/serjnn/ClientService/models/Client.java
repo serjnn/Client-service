@@ -1,31 +1,23 @@
 package com.serjnn.ClientService.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-
-import java.util.Collection;
-import java.util.Collections;
+import lombok.Setter;
 
 
 @NoArgsConstructor
 @Entity
-@Data
+@Getter
+@Setter
 @Table(name = "client")
-public class Client  {
+public class Client {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(length = 70, nullable = false)
-    private String username;
 
-    @Column(length = 70, nullable = true)
+    @Column(length = 70, nullable = false)
     private String mail;
 
     @Column(length = 300, nullable = false)
@@ -34,8 +26,8 @@ public class Client  {
     @Column(length = 10, nullable = true)
     private String role;
 
-    public Client(String username,String password) {
-        this.username = username;
+    public Client(String mail, String password) {
+        this.mail = mail;
         this.password = password;
     }
 

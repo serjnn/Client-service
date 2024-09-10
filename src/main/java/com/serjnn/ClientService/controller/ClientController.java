@@ -27,7 +27,7 @@ public class ClientController {
     @PostMapping("/register")
     public ResponseEntity<?> reg(@RequestBody RegRequest regRequest) {
 
-        if (regRequest.getUsername() == null || regRequest.getPassword() == null) {
+        if (regRequest.getMail() == null || regRequest.getPassword() == null) {
             return new ResponseEntity<>("Некоторые обязательные поля отсутствуют", HttpStatus.BAD_REQUEST);
         }
         clientService.register(regRequest);
