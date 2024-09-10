@@ -15,7 +15,7 @@ spring:
     name: client
 
 server:
-  port: 7004
+  port: 7015
 
 logging:
   level:

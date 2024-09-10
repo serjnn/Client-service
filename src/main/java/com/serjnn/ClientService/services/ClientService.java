@@ -27,7 +27,7 @@ public class ClientService {
         Client client = new Client(regRequest.getMail(),
                 passwordEncoder.encode(regRequest.getPassword())
         );
-        client.setRole("client");
+
 
         save(client);
 

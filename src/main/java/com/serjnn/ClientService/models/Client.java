@@ -16,19 +16,19 @@ public class Client {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-
-    @Column(length = 70, nullable = false)
+    @Column(length = 70, nullable = false, unique = true)
     private String mail;
 
     @Column(length = 300, nullable = false)
     private String password;
 
-    @Column(length = 10, nullable = true)
+    @Column(length = 10)
     private String role;
 
     public Client(String mail, String password) {
         this.mail = mail;
         this.password = password;
+        this.role = "client";
     }
 
 

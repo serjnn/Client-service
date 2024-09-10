@@ -23,12 +23,17 @@ public class ClientController {
     private final AuthenticationManager authenticationManager;
     private final ClientDetailService clientDetailService;
     private final JwtService jwtService;
+    private static final String EMAIL_REGEX = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
+
 
     @PostMapping("/register")
     public ResponseEntity<?> reg(@RequestBody RegRequest regRequest) {
 
         if (regRequest.getMail() == null || regRequest.getPassword() == null) {
             return new ResponseEntity<>("Некоторые обязательные поля отсутствуют", HttpStatus.BAD_REQUEST);
+        }
+        if (!regRequest.getMail().matches(EMAIL_REGEX)) {
+            return new ResponseEntity<>("Mail does not math the regex", HttpStatus.BAD_REQUEST);
         }
         clientService.register(regRequest);
         return ResponseEntity.ok("successful registration ");
@@ -40,13 +45,13 @@ public class ClientController {
     @PostMapping("/auth")
     public ResponseEntity<?> auth(@RequestBody AuthRequest authRequest) {
         try {
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getUsername(),
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getMail(),
                     authRequest.getPassword()));
         } catch (BadCredentialsException e) {
 
             return new ResponseEntity<>(new Error(), HttpStatus.UNAUTHORIZED);
         }
-        UserDetails userDetails = clientDetailService.loadUserByUsername(authRequest.getUsername());
+        UserDetails userDetails = clientDetailService.loadUserByUsername(authRequest.getMail());
 
         String token = jwtService.generateToken(userDetails);
         return ResponseEntity.ok(token);
