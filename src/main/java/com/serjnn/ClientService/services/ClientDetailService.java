@@ -1,8 +1,10 @@
 package com.serjnn.ClientService.services;
 
+import com.serjnn.ClientService.models.Client;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -23,10 +25,14 @@ public class ClientDetailService implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String mail) throws UsernameNotFoundException {
+        Client client= clientService.findByMail(mail);
 
-
-        return clientService.findByUsername(username);
+        return User.builder()
+                .username(client.getMail())
+                .password(client.getPassword())
+                .roles(new String[]{client.getRole()})
+                .build();
     }
 
 
