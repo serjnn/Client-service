@@ -11,8 +11,14 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
   main:
     allow-circular-references: true
+  application:
+    name: client
 
 server:
-  port: 7000
+  port: 7004
+
+logging:
+  level:
+    org.springframework.security: TRACE
 
 

@@ -17,6 +17,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -49,9 +50,10 @@ public class SecurityConfiguration {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+
         return httpSecurity.authorizeHttpRequests(registry -> {
                     registry.requestMatchers("/", "/api/v1/register", "/api/v1/auth").permitAll();
-                    registry.requestMatchers("/api/v1/some").hasRole("client");
+//                    registry.requestMatchers("/api/v1/some").hasRole("client");
                     registry.anyRequest().permitAll();
                 })
 
@@ -60,7 +62,8 @@ public class SecurityConfiguration {
                         .
                 addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
-                .authenticationProvider(authenticationProvider).build();
+                .authenticationProvider(authenticationProvider)
+                .build();
 
 
     }

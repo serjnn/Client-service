@@ -61,6 +61,24 @@ public class ClientController {
         return "some";
     }
 
+    @PostMapping("/validate")
+    public ResponseEntity<?> validateToken(@RequestHeader("Authorization") String token) {
+        token = token.substring(7);
+
+        try {
+            UserDetails userDetails = clientDetailService.loadUserByUsername(jwtService.extractUsername(token));
+            // Валидация токена
+            boolean isValid = jwtService.isTokenValid(token,userDetails);
+            if (isValid) {
+                return ResponseEntity.ok().build();  // Токен валиден
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token validation failed");
+        }
+    }
+
 
 
 
