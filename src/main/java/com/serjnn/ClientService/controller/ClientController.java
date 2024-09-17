@@ -2,7 +2,9 @@ package com.serjnn.ClientService.controller;
 
 
 import com.serjnn.ClientService.dtos.AuthRequest;
+import com.serjnn.ClientService.dtos.ClientInfoDto;
 import com.serjnn.ClientService.dtos.RegRequest;
+import com.serjnn.ClientService.models.Client;
 import com.serjnn.ClientService.services.ClientDetailService;
 import com.serjnn.ClientService.services.ClientService;
 import com.serjnn.ClientService.services.JwtService;
@@ -14,6 +16,8 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+
+import java.math.BigDecimal;
 
 @RestController
 @RequiredArgsConstructor
@@ -57,11 +61,6 @@ public class ClientController {
         return ResponseEntity.ok(token);
     }
 
-    @GetMapping("/some")
-    String some() {
-
-        return "some";
-    }
 
     @PostMapping("/validate")
     public ResponseEntity<?> validateToken(@RequestHeader("Authorization") String token) {
@@ -69,16 +68,34 @@ public class ClientController {
 
         try {
             UserDetails userDetails = clientDetailService.loadUserByUsername(jwtService.extractUsername(token));
-            // Валидация токена
             boolean isValid = jwtService.isTokenValid(token,userDetails);
             if (isValid) {
-                return ResponseEntity.ok().build();  // Токен валиден
+                return ResponseEntity.ok().build();
             } else {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
             }
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token validation failed");
         }
+    }
+
+
+    @GetMapping("/myInfo")
+    public ClientInfoDto clientInfo() {
+        Client client =  clientService.findCurrentClient();
+        return new ClientInfoDto(client.getId(),client.getMail(),  client.getBalance(), client.getAddress());
+    }
+
+    @PostMapping("/addBalance")
+    public void addBalance(@RequestParam BigDecimal amount) {
+        clientService.addBalance(amount);
+
+    }
+
+    @PostMapping("/changeAddress")
+    public void changeAddress(@RequestParam String address) {
+        clientService.setAddress(address);
+
     }
 
 

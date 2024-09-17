@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 
 @NoArgsConstructor
 @Entity
@@ -14,7 +16,7 @@ import lombok.Setter;
 public class Client {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @Column(length = 70, nullable = false, unique = true)
     private String mail;
@@ -24,6 +26,11 @@ public class Client {
 
     @Column(length = 10)
     private String role;
+
+    @Column(length = 300)
+    private String address;
+
+    private BigDecimal balance = new BigDecimal(0);
 
     public Client(String mail, String password) {
         this.mail = mail;
