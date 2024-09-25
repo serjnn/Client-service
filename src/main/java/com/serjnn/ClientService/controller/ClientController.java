@@ -3,6 +3,7 @@ package com.serjnn.ClientService.controller;
 
 import com.serjnn.ClientService.dtos.AuthRequest;
 import com.serjnn.ClientService.dtos.ClientInfoDto;
+import com.serjnn.ClientService.dtos.OrderDTO;
 import com.serjnn.ClientService.dtos.RegRequest;
 import com.serjnn.ClientService.models.Client;
 import com.serjnn.ClientService.services.ClientDetailService;
@@ -95,6 +96,17 @@ public class ClientController {
     @PostMapping("/changeAddress")
     public void changeAddress(@RequestParam String address) {
         clientService.setAddress(address);
+
+    }
+
+    @PostMapping("/restore")
+    public void restore(@RequestBody OrderDTO orderDTO) {
+        clientService.addBalance(orderDTO.getClientID(), orderDTO.getTotalSum());
+
+    }
+    @PostMapping("/deduct")
+    public ResponseEntity<HttpStatus> deduct(@RequestBody OrderDTO orderDTO) {
+       return  clientService.deductMoney(orderDTO.getClientID(),orderDTO.getTotalSum());
 
     }
 

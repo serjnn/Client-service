@@ -17,8 +17,5 @@ spring:
 server:
   port: 7015
 
-logging:
-  level:
-    org.springframework.security: TRACE
 
 

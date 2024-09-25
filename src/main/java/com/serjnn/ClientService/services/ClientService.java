@@ -5,6 +5,8 @@ import com.serjnn.ClientService.dtos.RegRequest;
 import com.serjnn.ClientService.models.Client;
 import com.serjnn.ClientService.repo.ClientRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,7 +21,8 @@ public class ClientService {
     private final ClientRepository clientRepository;
     private final PasswordEncoder passwordEncoder;
 
-
+    private Client findById(Long id) {return clientRepository.findById(id).orElseThrow(() ->
+            new NoSuchElementException("NO client with that id"));}
     public void save(Client client) {
         clientRepository.save(client);
     }
@@ -49,7 +52,13 @@ public class ClientService {
 
     }
 
-    public void addBalance(BigDecimal balance) {
+    public void addBalance(Long clientID, BigDecimal balance) {
+        Client client = findById(clientID);
+        client.setBalance(client.getBalance().add(balance));
+        save(client);
+    }
+
+    public void addBalance( BigDecimal balance) {
         Client client = findCurrentClient();
         client.setBalance(client.getBalance().add(balance));
         save(client);
@@ -59,5 +68,15 @@ public class ClientService {
         Client client = findCurrentClient();
         client.setAddress(address);
         save(client);
+    }
+
+    public ResponseEntity<HttpStatus> deductMoney(Long clientID, BigDecimal amount) {
+        Client client = findById(clientID);
+        if (client.getBalance().compareTo(amount) < 0) {
+            return new ResponseEntity<>(HttpStatus.CONFLICT); // 409
+        }
+        client.setBalance(client.getBalance().subtract(amount));
+        save(client);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
