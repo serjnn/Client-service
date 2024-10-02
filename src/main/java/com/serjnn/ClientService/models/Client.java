@@ -1,33 +1,29 @@
 package com.serjnn.ClientService.models;
 
-import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
 
 import java.math.BigDecimal;
 
 
 @NoArgsConstructor
-@Entity
+
 @Getter
 @Setter
 @Table(name = "client")
 public class Client {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 70, nullable = false, unique = true)
     private String mail;
 
-    @Column(length = 300, nullable = false)
     private String password;
 
-    @Column(length = 10)
     private String role;
 
-    @Column(length = 300)
     private String address;
 
     private BigDecimal balance = new BigDecimal(0);

@@ -1,19 +1,19 @@
 package com.serjnn.ClientService.services;
 
 
+import com.serjnn.ClientService.dtos.ClientInfoDto;
 import com.serjnn.ClientService.dtos.RegRequest;
 import com.serjnn.ClientService.models.Client;
 import com.serjnn.ClientService.repo.ClientRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
-import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
@@ -21,10 +21,13 @@ public class ClientService {
     private final ClientRepository clientRepository;
     private final PasswordEncoder passwordEncoder;
 
-    private Client findById(Long id) {return clientRepository.findById(id).orElseThrow(() ->
-            new NoSuchElementException("NO client with that id"));}
-    public void save(Client client) {
-        clientRepository.save(client);
+    private Mono<Client> findById(Long id) {
+        return clientRepository.findById(id)
+                .switchIfEmpty(Mono.error(new UsernameNotFoundException("User not found with id: " + id)));
+    }
+
+    public Mono<Void> save(Client client) {
+        return clientRepository.save(client).then();
     }
 
     public void register(RegRequest regRequest) {
@@ -39,44 +42,58 @@ public class ClientService {
 
     }
 
-    public Client findByMail(String mail) {
-        return clientRepository.findByMail(mail).orElseThrow(() -> new NoSuchElementException("no such" +
-                " client with mail  " + mail));
+    public Mono<Client> findByMail(String mail) {
+        return clientRepository.findByMail(mail);
 
     }
 
-    public Client findCurrentClient() {
+    public Mono<Client> findCurrentClient() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentMail = authentication.getName();
         return findByMail(currentMail);
 
     }
 
-    public void addBalance(Long clientID, BigDecimal balance) {
-        Client client = findById(clientID);
-        client.setBalance(client.getBalance().add(balance));
-        save(client);
+    public Mono<Void> addBalance(Long clientID, BigDecimal balance) {
+        return findById(clientID)
+                .map(client -> {
+                    client.setBalance(client.getBalance().add(balance));
+                    return client;
+                })
+                .flatMap(this::save);
+
     }
 
-    public void addBalance( BigDecimal balance) {
-        Client client = findCurrentClient();
-        client.setBalance(client.getBalance().add(balance));
-        save(client);
+
+    public Mono<Void> setAddress(String address) {
+        return findCurrentClient()
+                .map(client -> {
+                    client.setAddress(address);
+                    return client;
+                })
+                .flatMap(this::save);
+
     }
 
-    public void setAddress(String address) {
-        Client client = findCurrentClient();
-        client.setAddress(address);
-        save(client);
+    public Mono<Void> deductMoney(Long clientID, BigDecimal amount) {
+        return findById(clientID)
+                .flatMap(client -> {
+                    if (client.getBalance().compareTo(amount) < 0) {
+                        return Mono.error(new RuntimeException("Insufficient funds")); // Ошибка при недостатке средств
+                    }
+                    client.setBalance(client.getBalance().subtract(amount)); // Вычитаем деньги
+                    return save(client); // Сохраняем изменения
+                });
     }
 
-    public ResponseEntity<HttpStatus> deductMoney(Long clientID, BigDecimal amount) {
-        Client client = findById(clientID);
-        if (client.getBalance().compareTo(amount) < 0) {
-            return new ResponseEntity<>(HttpStatus.CONFLICT); // 409
-        }
-        client.setBalance(client.getBalance().subtract(amount));
-        save(client);
-        return new ResponseEntity<>(HttpStatus.OK);
+
+    public Mono<ClientInfoDto> getClientInfo() {
+        return findCurrentClient()
+                .map(client ->
+                        new ClientInfoDto(client.getId()
+                                ,client.getMail()
+                                ,  client.getBalance()
+                                , client.getAddress()));
+
     }
 }

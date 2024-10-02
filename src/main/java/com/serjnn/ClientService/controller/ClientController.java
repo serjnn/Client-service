@@ -17,6 +17,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
 
@@ -56,7 +57,7 @@ public class ClientController {
 
             return new ResponseEntity<>(new Error(), HttpStatus.UNAUTHORIZED);
         }
-        UserDetails userDetails = clientDetailService.loadUserByUsername(authRequest.getMail());
+        UserDetails userDetails = clientDetailService.findByUsername(authRequest.getMail()).block();
 
         String token = jwtService.generateToken(userDetails);
         return ResponseEntity.ok(token);
@@ -68,7 +69,8 @@ public class ClientController {
         token = token.substring(7);
 
         try {
-            UserDetails userDetails = clientDetailService.loadUserByUsername(jwtService.extractUsername(token));
+            //TODO try this without block()
+            UserDetails userDetails = clientDetailService.findByUsername(jwtService.extractUsername(token)).block();
             boolean isValid = jwtService.isTokenValid(token,userDetails);
             if (isValid) {
                 return ResponseEntity.ok().build();
@@ -82,30 +84,30 @@ public class ClientController {
 
 
     @GetMapping("/myInfo")
-    public ClientInfoDto clientInfo() {
-        Client client =  clientService.findCurrentClient();
-        return new ClientInfoDto(client.getId(),client.getMail(),  client.getBalance(), client.getAddress());
+    public Mono<ClientInfoDto> clientInfo() {
+        return clientService.getClientInfo();
     }
 
     @PostMapping("/addBalance")
-    public void addBalance(@RequestParam BigDecimal amount) {
-        clientService.addBalance(amount);
+    public Mono<Void> addBalance(@RequestParam BigDecimal amount) {
+        return clientService.addBalance(1L,amount);
 
     }
 
     @PostMapping("/changeAddress")
-    public void changeAddress(@RequestParam String address) {
-        clientService.setAddress(address);
+    public Mono<Void> changeAddress(@RequestParam String address) {
+        return clientService.setAddress(address);
 
     }
 
     @PostMapping("/restore")
-    public void restore(@RequestBody OrderDTO orderDTO) {
-        clientService.addBalance(orderDTO.getClientID(), orderDTO.getTotalSum());
+    public Mono<Void> restore(@RequestBody OrderDTO orderDTO) {
+        return clientService.addBalance(orderDTO.getClientID(), orderDTO.getTotalSum());
 
     }
     @PostMapping("/deduct")
-    public ResponseEntity<HttpStatus> deduct(@RequestBody OrderDTO orderDTO) {
+    public Mono<Void> deduct(@RequestBody OrderDTO orderDTO) {
+
        return  clientService.deductMoney(orderDTO.getClientID(),orderDTO.getTotalSum());
 
     }

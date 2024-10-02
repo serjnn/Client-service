@@ -1,16 +1,16 @@
 package com.serjnn.ClientService.services;
 
-import com.serjnn.ClientService.models.Client;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 
 @Service
 
-public class ClientDetailService implements UserDetailsService {
+public class ClientDetailService implements ReactiveUserDetailsService {
     private ClientService clientService;
 
 
@@ -19,16 +19,17 @@ public class ClientDetailService implements UserDetailsService {
         this.clientService = clientService;
     }
 
+
     @Override
-    public UserDetails loadUserByUsername(String mail) throws UsernameNotFoundException {
-        Client client = clientService.findByMail(mail);
+    public Mono<UserDetails> findByUsername(String mail) {
+        return clientService.findByMail(mail)
+                .switchIfEmpty(Mono.error(new UsernameNotFoundException("User not found with mail: " + mail)))
+                .map(client -> User.builder()
+                        .username(client.getMail())
+                        .password(client.getPassword())
+                        .roles(new String[]{client.getRole()})
+                        .build());
 
-        return User.builder()
-                .username(client.getMail())
-                .password(client.getPassword())
-                .roles(new String[]{client.getRole()})
-                .build();
+
     }
-
-
 }
