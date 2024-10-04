@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -26,14 +27,14 @@ import java.math.BigDecimal;
 @RequestMapping("/api/v1")
 public class ClientController {
     private final ClientService clientService;
-    private final AuthenticationManager authenticationManager;
+    private final ReactiveAuthenticationManager authenticationManager;
     private final ClientDetailService clientDetailService;
     private final JwtService jwtService;
     private static final String EMAIL_REGEX = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
 
 
     @PostMapping("/register")
-    public ResponseEntity<?> reg(@RequestBody RegRequest regRequest) {
+     ResponseEntity<?> reg(@RequestBody RegRequest regRequest) {
 
         if (regRequest.getMail() == null || regRequest.getPassword() == null) {
             return new ResponseEntity<>("Некоторые обязательные поля отсутствуют", HttpStatus.BAD_REQUEST);
@@ -41,72 +42,79 @@ public class ClientController {
         if (!regRequest.getMail().matches(EMAIL_REGEX)) {
             return new ResponseEntity<>("Mail does not math the regex", HttpStatus.BAD_REQUEST);
         }
-        clientService.register(regRequest);
-        return ResponseEntity.ok("successful registration ");
+        return ResponseEntity.ok(clientService.register(regRequest));
 
 
     }
 
 
     @PostMapping("/auth")
-    public ResponseEntity<?> auth(@RequestBody AuthRequest authRequest) {
-        try {
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getMail(),
-                    authRequest.getPassword()));
-        } catch (BadCredentialsException e) {
-
-            return new ResponseEntity<>(new Error(), HttpStatus.UNAUTHORIZED);
-        }
-        UserDetails userDetails = clientDetailService.findByUsername(authRequest.getMail()).block();
-
-        String token = jwtService.generateToken(userDetails);
-        return ResponseEntity.ok(token);
+     Mono<ResponseEntity<String>> auth(@RequestBody AuthRequest authRequest) {
+        return authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getMail(),
+                        authRequest.getPassword()))
+                .flatMap(authentication -> clientDetailService.findByUsername(authRequest.getMail()))
+                .flatMap(userDetails -> {
+                    if (userDetails == null) {
+                        return Mono.just(ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials"));
+                    }
+                    String token = jwtService.generateToken(userDetails);
+                    return Mono.just(ResponseEntity.ok(token));
+                })
+                .onErrorResume(BadCredentialsException.class, e -> Mono.just(ResponseEntity.badRequest().build()));
     }
+
+
 
 
     @PostMapping("/validate")
-    public ResponseEntity<?> validateToken(@RequestHeader("Authorization") String token) {
-        token = token.substring(7);
+     Mono<ResponseEntity<?>> validateToken(@RequestHeader("Authorization")  String token) {
+        String extractedToken   = token.substring(7);
 
-        try {
-            //TODO try this without block()
-            UserDetails userDetails = clientDetailService.findByUsername(jwtService.extractUsername(token)).block();
-            boolean isValid = jwtService.isTokenValid(token,userDetails);
-            if (isValid) {
-                return ResponseEntity.ok().build();
-            } else {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
-            }
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token validation failed");
-        }
+        System.out.println(extractedToken);
+        String username = jwtService.extractUsername(token);
+
+        return clientDetailService.findByUsername(username)
+                .flatMap(userDetails -> {
+                    if (userDetails == null) {
+                        return Mono.just(ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token"));
+                    }
+                    boolean isValid = jwtService.isTokenValid(extractedToken, userDetails);
+                    if (isValid) {
+                        return Mono.just(ResponseEntity.ok().build());
+                    } else {
+                        return Mono.just(ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token"));
+                    }
+                })
+                .onErrorReturn(Exception.class, ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token validation failed"));
     }
 
 
+
+
     @GetMapping("/myInfo")
-    public Mono<ClientInfoDto> clientInfo() {
+     Mono<ClientInfoDto> clientInfo() {
         return clientService.getClientInfo();
     }
 
     @PostMapping("/addBalance")
-    public Mono<Void> addBalance(@RequestParam BigDecimal amount) {
+     Mono<Void> addBalance(@RequestParam BigDecimal amount) {
         return clientService.addBalance(1L,amount);
 
     }
 
     @PostMapping("/changeAddress")
-    public Mono<Void> changeAddress(@RequestParam String address) {
+     Mono<Void> changeAddress(@RequestParam String address) {
         return clientService.setAddress(address);
 
     }
 
     @PostMapping("/restore")
-    public Mono<Void> restore(@RequestBody OrderDTO orderDTO) {
+     Mono<Void> restore(@RequestBody OrderDTO orderDTO) {
         return clientService.addBalance(orderDTO.getClientID(), orderDTO.getTotalSum());
 
     }
     @PostMapping("/deduct")
-    public Mono<Void> deduct(@RequestBody OrderDTO orderDTO) {
+     Mono<Void> deduct(@RequestBody OrderDTO orderDTO) {
 
        return  clientService.deductMoney(orderDTO.getClientID(),orderDTO.getTotalSum());
 

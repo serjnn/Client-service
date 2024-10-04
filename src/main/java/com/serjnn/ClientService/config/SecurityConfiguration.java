@@ -45,14 +45,16 @@ public class SecurityConfiguration {
     @Bean
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
         return http
-                .csrf(ServerHttpSecurity.CsrfSpec::disable) // Disable CSRF
+                .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .authorizeExchange(exchange -> exchange
-                        .pathMatchers("/", "/api/v1/register", "/api/v1/auth").permitAll() // Permit public paths
-                        .anyExchange().authenticated() // Require authentication for all other paths
+                        .pathMatchers("/", "/api/v1/register", "/api/v1/auth","/api/v1/validate").permitAll()
+                        .anyExchange().authenticated()
                 )
-                .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable) // Disable HTTP Basic authentication if not needed
-                .formLogin(ServerHttpSecurity.FormLoginSpec::disable) // Disable form login if not needed
-                .addFilterBefore(jwtAuthenticationFilter, SecurityWebFiltersOrder.AUTHENTICATION) // Add JWT filter
+                .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
+                .authenticationManager(authenticationManager())
+
+                .formLogin(ServerHttpSecurity.FormLoginSpec::disable)
+                .addFilterBefore(jwtAuthenticationFilter, SecurityWebFiltersOrder.AUTHENTICATION)
                 .build();
     }
 

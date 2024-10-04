@@ -30,7 +30,7 @@ public class ClientService {
         return clientRepository.save(client).then();
     }
 
-    public void register(RegRequest regRequest) {
+    public Mono<Void> register(RegRequest regRequest) {
 
 
         Client client = new Client(regRequest.getMail(),
@@ -38,7 +38,7 @@ public class ClientService {
         );
 
 
-        save(client);
+        return save(client);
 
     }
 
