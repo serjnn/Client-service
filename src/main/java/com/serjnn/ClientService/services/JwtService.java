@@ -22,9 +22,10 @@ import java.util.stream.Collectors;
 public class JwtService {
 
     private static final String SECRET_KEY =
-            "6A576D5A7134743777217A25432A462D4A614E645267556B5870327235753878";
+            "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 
     public String extractUsername(String token) {
+
         return extractClaim(token, Claims::getSubject);
     }
 
@@ -44,8 +45,12 @@ public class JwtService {
     }
 
     private Key getSigningKey() {
+
+
         byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
         return Keys.hmacShaKeyFor(keyBytes);
+
+
     }
 
     public List<GrantedAuthority> extractAuthorities(String token) {
