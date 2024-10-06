@@ -8,12 +8,11 @@ import com.serjnn.ClientService.repo.ClientRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
-import org.springframework.security.core.context.SecurityContext;
 
 import java.math.BigDecimal;
 
@@ -81,10 +80,10 @@ public class ClientService {
         return findById(clientID)
                 .flatMap(client -> {
                     if (client.getBalance().compareTo(amount) < 0) {
-                        return Mono.error(new RuntimeException("Insufficient funds")); // Ошибка при недостатке средств
+                        return Mono.error(new RuntimeException("Insufficient funds"));
                     }
-                    client.setBalance(client.getBalance().subtract(amount)); // Вычитаем деньги
-                    return save(client); // Сохраняем изменения
+                    client.setBalance(client.getBalance().subtract(amount));
+                    return save(client);
                 });
     }
 
@@ -93,8 +92,8 @@ public class ClientService {
         return findCurrentClient()
                 .map(client ->
                         new ClientInfoDto(client.getId()
-                                ,client.getMail()
-                                ,  client.getBalance()
+                                , client.getMail()
+                                , client.getBalance()
                                 , client.getAddress()));
 
     }
