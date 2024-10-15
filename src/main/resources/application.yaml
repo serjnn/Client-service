@@ -5,8 +5,7 @@ spring:
     username: postgres
     password: Vaifery111
 
-  main:
-    allow-circular-references: true
+
   application:
     name: client
 

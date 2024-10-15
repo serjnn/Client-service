@@ -1,7 +1,7 @@
 package com.serjnn.ClientService.services;
 
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -12,24 +12,15 @@ import reactor.core.publisher.Mono;
 
 
 @Component
-
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter implements WebFilter {
-
-    @Autowired
-
-
     private final JwtService jwtService;
-    private ClientDetailService clientDetailService;
+    private final ClientDetailService clientDetailService;
 
-
-    @Autowired
-    public void setClientDetailService(ClientDetailService clientDetailService) {
-        this.clientDetailService = clientDetailService;
-    }
 
     @Override
-    public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
+    @NonNull
+    public Mono<Void> filter(ServerWebExchange exchange, @NonNull WebFilterChain chain) {
         String authHeader = exchange.getRequest().getHeaders().getFirst("Authorization");
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {

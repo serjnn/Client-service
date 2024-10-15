@@ -2,7 +2,7 @@ package com.serjnn.ClientService.config;
 
 import com.serjnn.ClientService.services.ClientDetailService;
 import com.serjnn.ClientService.services.JwtAuthenticationFilter;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
@@ -21,24 +21,13 @@ import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 @Configuration
 @EnableWebFluxSecurity
 @EnableReactiveMethodSecurity
-
+@RequiredArgsConstructor
 public class SecurityConfiguration {
-    @Autowired
-    public void setJwtAuthenticationFilter(JwtAuthenticationFilter jwtAuthenticationFilter) {
-        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
-    }
-
-    @Autowired
-    public void setClientDetailService(ClientDetailService clientDetailService) {
-        this.clientDetailService = clientDetailService;
-    }
 
 
+    private final ClientDetailService clientDetailService;
 
-
-    private ClientDetailService clientDetailService;
-
-    private JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
 
     @Bean
@@ -51,7 +40,6 @@ public class SecurityConfiguration {
                 )
                 .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
                 .authenticationManager(authenticationManager())
-
                 .formLogin(ServerHttpSecurity.FormLoginSpec::disable)
                 .addFilterBefore(jwtAuthenticationFilter, SecurityWebFiltersOrder.AUTHENTICATION)
                 .build();
@@ -86,7 +74,6 @@ public class SecurityConfiguration {
     public ReactiveAuthenticationManager authenticationManager() {
         UserDetailsRepositoryReactiveAuthenticationManager manager =
                 new UserDetailsRepositoryReactiveAuthenticationManager(clientDetailService);
-
         manager.setPasswordEncoder(passwordEncoder());
         return manager;
     }
