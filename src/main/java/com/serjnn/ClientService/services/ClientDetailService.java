@@ -1,5 +1,7 @@
 package com.serjnn.ClientService.services;
 
+import com.serjnn.ClientService.repo.ClientRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.User;
@@ -9,20 +11,18 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 @Service
+@RequiredArgsConstructor
 
 public class ClientDetailService implements ReactiveUserDetailsService {
-    private ClientService clientService;
+
+    private final ClientRepository clientRepository;
 
 
-    @Autowired
-    public void setClientService(ClientService clientService) {
-        this.clientService = clientService;
-    }
 
 
     @Override
     public Mono<UserDetails> findByUsername(String mail) {
-        return clientService.findByMail(mail)
+        return clientRepository.findByMail(mail)
                 .switchIfEmpty(Mono.error(new UsernameNotFoundException("User not found with mail: " + mail)))
                 .map(client -> User.builder()
                         .username(client.getMail())
