@@ -2,7 +2,6 @@ package com.serjnn.ClientService.services;
 
 import com.serjnn.ClientService.repo.ClientRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,8 +15,6 @@ import reactor.core.publisher.Mono;
 public class ClientDetailService implements ReactiveUserDetailsService {
 
     private final ClientRepository clientRepository;
-
-
 
 
     @Override
