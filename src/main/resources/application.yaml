@@ -1,13 +1,14 @@
 spring:
   datasource:
     driver-class-name: ${DB_DRIVER:org.postgresql.Driver}
-    url: ${DB_URL:jdbc:postgresql://localhost:5432/micr-synch}
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/micr-db}
     username: ${DB_USERNAME:qwe}
     password: ${DB_PASSWORD:qwe}
   flyway:
     url: ${spring.datasource.url}
     user: ${spring.datasource.username}
     password: ${spring.datasource.password}
+    default-schema: client_schema
 
   application:
     name: client
