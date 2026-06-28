@@ -1,0 +1,8 @@
+CREATE TABLE IF NOT EXISTS client (
+    id BIGSERIAL PRIMARY KEY,
+    mail VARCHAR(255) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    role VARCHAR(50),
+    address VARCHAR(255),
+    balance DECIMAL(19, 2)
+);
