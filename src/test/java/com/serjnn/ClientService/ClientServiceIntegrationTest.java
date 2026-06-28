@@ -52,7 +52,7 @@ public class ClientServiceIntegrationTest {
         reg.setPassword("secret123");
 
         webTestClient.post()
-                .uri("/api/v1/register")
+                .uri("/api/v1/clients/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(reg)
                 .exchange()
@@ -63,7 +63,7 @@ public class ClientServiceIntegrationTest {
         auth.setPassword("secret123");
 
         webTestClient.post()
-                .uri("/api/v1/auth")
+                .uri("/api/v1/clients/auth")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(auth)
                 .exchange()
