@@ -1,6 +1,6 @@
-package com.serjnn.ClientService.services;
+package com.serjnn.ClientService.service;
 
-import com.serjnn.ClientService.repo.ClientRepository;
+import com.serjnn.ClientService.repository.ClientRepository;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

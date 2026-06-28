@@ -1,4 +1,4 @@
-package com.serjnn.ClientService.services;
+package com.serjnn.ClientService.service;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

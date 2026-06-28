@@ -1,6 +1,6 @@
-package com.serjnn.ClientService.repo;
+package com.serjnn.ClientService.repository;
 
-import com.serjnn.ClientService.models.Client;
+import com.serjnn.ClientService.model.Client;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;

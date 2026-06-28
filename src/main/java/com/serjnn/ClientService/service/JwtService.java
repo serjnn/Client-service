@@ -1,4 +1,4 @@
-package com.serjnn.ClientService.services;
+package com.serjnn.ClientService.service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

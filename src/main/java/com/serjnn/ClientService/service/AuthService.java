@@ -1,7 +1,7 @@
-package com.serjnn.ClientService.services;
+package com.serjnn.ClientService.service;
 
-import com.serjnn.ClientService.dtos.AuthRequest;
-import com.serjnn.ClientService.dtos.RegRequest;
+import com.serjnn.ClientService.dto.AuthRequest;
+import com.serjnn.ClientService.dto.RegRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
