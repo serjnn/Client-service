@@ -1,4 +1,4 @@
-package com.serjnn.ClientService.models;
+package com.serjnn.ClientService.model;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

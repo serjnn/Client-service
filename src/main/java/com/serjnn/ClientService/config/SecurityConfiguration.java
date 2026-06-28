@@ -1,7 +1,7 @@
 package com.serjnn.ClientService.config;
 
-import com.serjnn.ClientService.services.ClientDetailService;
-import com.serjnn.ClientService.services.JwtAuthenticationFilter;
+import com.serjnn.ClientService.service.ClientDetailService;
+import com.serjnn.ClientService.service.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

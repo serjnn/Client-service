@@ -1,6 +1,6 @@
-package com.serjnn.ClientService.services;
+package com.serjnn.ClientService.service;
 
-import com.serjnn.ClientService.repo.ClientRepository;
+import com.serjnn.ClientService.repository.ClientRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.User;
