@@ -1,8 +1,8 @@
 package com.serjnn.ClientService.controller;
 
-import com.serjnn.ClientService.dtos.*;
-import com.serjnn.ClientService.services.AuthService;
-import com.serjnn.ClientService.services.ClientService;
+import com.serjnn.ClientService.dto.*;
+import com.serjnn.ClientService.service.AuthService;
+import com.serjnn.ClientService.service.ClientService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;

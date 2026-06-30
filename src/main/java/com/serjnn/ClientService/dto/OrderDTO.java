@@ -1,4 +1,4 @@
-package com.serjnn.ClientService.dtos;
+package com.serjnn.ClientService.dto;
 
 import java.math.BigDecimal;
 import java.util.List;
